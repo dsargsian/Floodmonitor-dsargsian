@@ -1,0 +1,1524 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Floodmonitor REST API",
+    "version": "1.0.0",
+    "description": "JSON standardmäßig, XML via Accept. Öffentlicher Lesezugriff als Viewer; X-API-Key für Admin-Schreibzugriffe. Daten sind simuliert und im Arbeitsspeicher. Fehler im selben Format, außer 406 mit JSON-Fallback."
+  },
+  "servers": [
+    {
+      "url": "/api/v1"
+    }
+  ],
+  "paths": {
+    "/stations": {
+      "get": {
+        "summary": "Stationen auflisten",
+        "parameters": [
+          {
+            "name": "river",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Flussname, Groß-/Kleinschreibung egal"
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Aktivitätsfilter"
+          },
+          {
+            "name": "warningLevel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WarningLevel"
+            },
+            "description": "Exakte Warnstufe, Großbuchstaben"
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Erfolgreich",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Stations"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Stations"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ungültige Felder, Datumsformate, Zeiträume, Warnstufen oder Limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API-Schlüssel fehlt für Schreibzugriff oder ist ungültig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station oder Pfad nicht gefunden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Accept nicht unterstützt; Fehlerantwort ausnahmsweise JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Fehler ohne Stacktrace im Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Station anlegen (Admin)",
+        "parameters": [],
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Erstellt",
+            "headers": {
+              "Location": {
+                "description": "URL der neuen Station",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Station"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Station"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ungültige Felder, Datumsformate, Zeiträume, Warnstufen oder Limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API-Schlüssel fehlt für Schreibzugriff oder ist ungültig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Viewer darf nicht administrieren",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station oder Pfad nicht gefunden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Accept nicht unterstützt; Fehlerantwort ausnahmsweise JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Doppelte ID oder Verwaltung an Zentrale statt Stationsprozess",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type nicht unterstützt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Fehler ohne Stacktrace im Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Station"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/Station"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations/{stationId}": {
+      "get": {
+        "summary": "Station abrufen",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Erfolgreich",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Station"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Station"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ungültige Felder, Datumsformate, Zeiträume, Warnstufen oder Limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API-Schlüssel fehlt für Schreibzugriff oder ist ungültig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station oder Pfad nicht gefunden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Accept nicht unterstützt; Fehlerantwort ausnahmsweise JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Fehler ohne Stacktrace im Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Station teilweise ändern (Admin)",
+        "parameters": [],
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Erfolgreich",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Station"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Station"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ungültige Felder, Datumsformate, Zeiträume, Warnstufen oder Limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API-Schlüssel fehlt für Schreibzugriff oder ist ungültig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Viewer darf nicht administrieren",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station oder Pfad nicht gefunden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Accept nicht unterstützt; Fehlerantwort ausnahmsweise JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Doppelte ID oder Verwaltung an Zentrale statt Stationsprozess",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type nicht unterstützt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Fehler ohne Stacktrace im Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StationPatch"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/StationPatch"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Station samt Historie löschen (Admin)",
+        "parameters": [],
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Gelöscht, kein Body"
+          },
+          "400": {
+            "description": "Ungültige Felder, Datumsformate, Zeiträume, Warnstufen oder Limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API-Schlüssel fehlt für Schreibzugriff oder ist ungültig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Viewer darf nicht administrieren",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station oder Pfad nicht gefunden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Accept nicht unterstützt; Fehlerantwort ausnahmsweise JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Doppelte ID oder Verwaltung an Zentrale statt Stationsprozess",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type nicht unterstützt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Fehler ohne Stacktrace im Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "stationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Zum Beispiel ST-001"
+        }
+      ]
+    },
+    "/stations/{stationId}/measurements/latest": {
+      "get": {
+        "summary": "Neueste Messung; veraltet, offline oder inaktiv ergibt UNKNOWN",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Erfolgreich",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Measurement"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Measurement"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Station vorhanden, aber noch keine Messung; Warnzustand UNKNOWN"
+          },
+          "400": {
+            "description": "Ungültige Felder, Datumsformate, Zeiträume, Warnstufen oder Limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API-Schlüssel fehlt für Schreibzugriff oder ist ungültig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station oder Pfad nicht gefunden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Accept nicht unterstützt; Fehlerantwort ausnahmsweise JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Fehler ohne Stacktrace im Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "stationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Zum Beispiel ST-001"
+        }
+      ]
+    },
+    "/stations/{stationId}/measurements": {
+      "get": {
+        "summary": "Historie, absteigend nach Zeitpunkt",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Inklusive Grenze, ISO-8601 mit Zeitzone; from <= to"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Inklusive Grenze, ISO-8601 mit Zeitzone; from <= to"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 100
+            },
+            "description": "Maximale Ergebnisanzahl"
+          },
+          {
+            "name": "warningLevel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WarningLevel"
+            },
+            "description": "Exakte Warnstufe, Großbuchstaben"
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Erfolgreich",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Measurements"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Measurements"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ungültige Felder, Datumsformate, Zeiträume, Warnstufen oder Limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API-Schlüssel fehlt für Schreibzugriff oder ist ungültig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station oder Pfad nicht gefunden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Accept nicht unterstützt; Fehlerantwort ausnahmsweise JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Fehler ohne Stacktrace im Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "stationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Zum Beispiel ST-001"
+        }
+      ]
+    },
+    "/stations/{stationId}/statistics": {
+      "get": {
+        "summary": "Statistik über alle gespeicherten Treffer; unabhängig vom Historienlimit",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Inklusive Grenze, ISO-8601 mit Zeitzone; from <= to"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "description": "Inklusive Grenze, ISO-8601 mit Zeitzone; from <= to"
+          },
+          {
+            "name": "warningLevel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WarningLevel"
+            },
+            "description": "Exakte Warnstufe, Großbuchstaben"
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Erfolgreich",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Statistics"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Statistics"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ungültige Felder, Datumsformate, Zeiträume, Warnstufen oder Limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API-Schlüssel fehlt für Schreibzugriff oder ist ungültig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station oder Pfad nicht gefunden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Accept nicht unterstützt; Fehlerantwort ausnahmsweise JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Fehler ohne Stacktrace im Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "stationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Zum Beispiel ST-001"
+        }
+      ]
+    },
+    "/alerts": {
+      "get": {
+        "summary": "Nur aktuelle WARNING- und CRITICAL-Messungen; NORMAL/UNKNOWN als Filter liefern leere Liste",
+        "parameters": [
+          {
+            "name": "river",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Flussname, Groß-/Kleinschreibung egal"
+          },
+          {
+            "name": "warningLevel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WarningLevel"
+            },
+            "description": "Exakte Warnstufe, Großbuchstaben"
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Erfolgreich",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alerts"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alerts"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ungültige Felder, Datumsformate, Zeiträume, Warnstufen oder Limits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "API-Schlüssel fehlt für Schreibzugriff oder ist ungültig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station oder Pfad nicht gefunden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Accept nicht unterstützt; Fehlerantwort ausnahmsweise JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Fehler ohne Stacktrace im Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "WarningLevel": {
+        "type": "string",
+        "enum": [
+          "NORMAL",
+          "WARNING",
+          "CRITICAL",
+          "UNKNOWN"
+        ]
+      },
+      "StationStatus": {
+        "type": "string",
+        "enum": [
+          "ONLINE",
+          "MAINTENANCE",
+          "OFFLINE"
+        ]
+      },
+      "Location": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
+            "minimum": -180,
+            "maximum": 180
+          }
+        }
+      },
+      "Station": {
+        "type": "object",
+        "additionalProperties": false,
+        "xml": {
+          "name": "station"
+        },
+        "required": [
+          "id",
+          "name",
+          "river",
+          "location",
+          "normalWaterLevel",
+          "warningWaterLevel",
+          "criticalWaterLevel",
+          "isActive"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9-]{1,40}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "river": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "location": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "normalWaterLevel": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0
+          },
+          "warningWaterLevel": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "criticalWaterLevel": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "description": "0 <= normalWaterLevel < warningWaterLevel < criticalWaterLevel. Wasserstände in cm."
+      },
+      "StationPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "xml": {
+          "name": "station"
+        },
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "river": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "location": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "normalWaterLevel": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0
+          },
+          "warningWaterLevel": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "criticalWaterLevel": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "description": "Teilaktualisierung; ausgelassene Felder bleiben erhalten. null und id sind unzulässig. location wird vollständig ersetzt."
+      },
+      "Measurement": {
+        "type": "object",
+        "xml": {
+          "name": "measurement"
+        },
+        "properties": {
+          "stationId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "waterLevel": {
+            "type": "number",
+            "format": "double",
+            "description": "cm"
+          },
+          "flowRate": {
+            "type": "number",
+            "format": "double",
+            "description": "m³/s"
+          },
+          "rainfall": {
+            "type": "number",
+            "format": "double",
+            "description": "Stundenwert in mm/h"
+          },
+          "temperature": {
+            "type": "number",
+            "format": "double",
+            "description": "°C"
+          },
+          "batteryLevel": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "status": {
+            "$ref": "#/components/schemas/StationStatus"
+          },
+          "warningLevel": {
+            "$ref": "#/components/schemas/WarningLevel"
+          }
+        }
+      },
+      "Statistics": {
+        "type": "object",
+        "xml": {
+          "name": "statistics"
+        },
+        "properties": {
+          "stationId": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "minWaterLevel": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxWaterLevel": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "averageWaterLevel": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "averageFlowRate": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalRainfall": {
+            "type": "number",
+            "format": "double",
+            "description": "Arithmetische Summe der Stundenwerte (mm/h), keine zeitliche Integration."
+          },
+          "warningCount": {
+            "type": "integer",
+            "description": "Nur WARNING"
+          },
+          "criticalCount": {
+            "type": "integer",
+            "description": "Nur CRITICAL"
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "xml": {
+          "name": "error"
+        },
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      },
+      "Stations": {
+        "type": "object",
+        "xml": {
+          "name": "stations"
+        },
+        "properties": {
+          "stations": {
+            "type": "array",
+            "xml": {
+              "wrapped": false
+            },
+            "items": {
+              "$ref": "#/components/schemas/Station",
+              "xml": {
+                "name": "station"
+              }
+            }
+          }
+        }
+      },
+      "Measurements": {
+        "type": "object",
+        "xml": {
+          "name": "measurements"
+        },
+        "properties": {
+          "measurements": {
+            "type": "array",
+            "xml": {
+              "wrapped": false
+            },
+            "items": {
+              "$ref": "#/components/schemas/Measurement",
+              "xml": {
+                "name": "measurement"
+              }
+            }
+          }
+        }
+      },
+      "Alerts": {
+        "type": "object",
+        "xml": {
+          "name": "alerts"
+        },
+        "properties": {
+          "alerts": {
+            "type": "array",
+            "xml": {
+              "wrapped": false
+            },
+            "items": {
+              "$ref": "#/components/schemas/Measurement",
+              "xml": {
+                "name": "measurement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Admin-Schlüssel aus FLOOD_ADMIN_KEY; optionaler Viewer-Schlüssel aus FLOOD_VIEWER_KEY besitzt keine Schreibrechte."
+      }
+    }
+  }
+}

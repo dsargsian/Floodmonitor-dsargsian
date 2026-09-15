@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="de">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flusswache · Floodmonitor</title><link rel="stylesheet" href="/style.css"><script defer src="/vendor/jquery-3.7.1.min.js"></script><script defer src="/app.js"></script></head>
+<body>
+<header><a class="brand" href="/">≈ <span>FLUSSWACHE</span></a><span class="tag">Hochwasser-Monitor · Simulation</span><a href="/openapi.json">API-Dokumentation ↗</a></header>
+<main>
+  <div class="heading"><div><p class="eyebrow">MESSNETZ ÖSTERREICH</p><h1>Unsere Flüsse im Blick.</h1><p class="intro">Aktuelle Pegel, Entwicklungen und Warnungen an einem Ort.</p></div><div class="live"><span></span> Automatisch alle 10 Sekunden<small id="updated">Noch nicht aktualisiert</small></div></div>
+  <section aria-label="Messstationen"><div class="section-title"><h2>Messstationen</h2><span id="station-count"></span></div><div id="stations" class="stations"></div></section>
+  <section class="panel filters" aria-label="Filter">
+    <label>Messstation<select id="station"></select></label>
+    <label>Von (Ortszeit)<input id="from" type="datetime-local"></label>
+    <label>Bis (Ortszeit)<input id="to" type="datetime-local"></label>
+    <label>Warnstufe<select id="warning"><option value="">Alle Warnstufen</option><option value="NORMAL">NORMAL</option><option value="WARNING">WARNING</option><option value="CRITICAL">CRITICAL</option><option value="UNKNOWN">UNKNOWN</option></select></label>
+    <label>Format<select id="format"><option value="json">JSON</option><option value="xml">XML</option></select></label>
+    <button id="refresh">Aktualisieren ↻</button>
+  </section>
+  <p id="message" role="status" aria-live="polite"></p>
+  <section class="detail-grid"><div class="panel current"><p class="eyebrow">AKTUELLER MESSWERT</p><h2 id="current-name">—</h2><div id="latest"></div></div><div class="panel stats"><p class="eyebrow">AUSWERTUNG IM ZEITRAUM</p><div id="statistics"></div><p class="note">Niederschlag: Summe der gemeldeten Stundenwerte, keine integrierte Regenmenge.</p></div></section>
+  <section class="panel history"><div class="section-title"><div><p class="eyebrow">MESSVERLAUF</p><h2>Historische Messwerte</h2></div><span id="row-count"></span></div><div class="table-scroll"><table><thead><tr><th>Station / Zeitpunkt</th><th>Wasserstand</th><th>Durchfluss</th><th>Niederschlag</th><th>Akku</th><th>Status</th><th>Warnstufe</th></tr></thead><tbody id="history"></tbody></table></div><p class="note">Neueste zuerst · maximal 100 Messungen · Zeitangaben in Ihrer lokalen Zeitzone</p></section>
+  <footer><span>FLUSSWACHE / DEZSYS GK71</span><span>Simulierte Daten · kein operatives Warnsystem</span></footer>
+</main>
+</body></html>
