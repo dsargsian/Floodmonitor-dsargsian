@@ -102,9 +102,8 @@ Stammdaten werden **am jeweiligen Stationsprozess** administriert; Schreibzugrif
 ## Dokumentation und Abnahme
 
 - [Analyse, Architektur, Datenmodell, Regeln und Reflexion](docs/ARCHITECTURE.md)
-- [Cheatsheet mit beantworteten Fragestellungen und Quellen](docs/CHEATSHEET.md)
+- [Cheatsheet mit beantworteten Fragestellungen und Quellen](CHEATSHEET.md)
 - [AI-Prompt-Protokoll](docs/AI-PROMPTS.md)
-- [Test- und Abnahmeprotokoll](docs/VERIFICATION.md)
 - [Konfigurationsbeispiel ohne Zugangsdaten](config/application-example.properties)
 
 ## Tests

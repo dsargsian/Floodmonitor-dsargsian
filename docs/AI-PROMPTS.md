@@ -21,4 +21,4 @@ Der Assistent las die verlinkte Aufgabenstellung, prüfte den leeren Projektordn
 - Öffentliche Viewer-Abfragen und Header-Schlüssel für Admin-Zugriffe.
 - Optionaler Mehrprozessbetrieb, Administration direkt am Stationsprozess.
 
-Die KI-Unterstützung ersetzt nicht das Verständnis des Quellcodes für das Abgabegespräch. Die Prüfergebnisse und verbleibenden Grenzen stehen in `VERIFICATION.md` und `README.md`.
+Die KI-Unterstützung ersetzt nicht das Verständnis des Quellcodes für das Abgabegespräch. Start, Bedienung und Grenzen stehen in `README.md`.

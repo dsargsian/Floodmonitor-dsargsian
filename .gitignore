@@ -4,3 +4,5 @@ target/
 *.iml
 .env
 logs/
+dist/
+ABGABE-PRUEFUNG.json
