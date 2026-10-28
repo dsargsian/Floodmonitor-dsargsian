@@ -22,3 +22,9 @@ Der Assistent las die verlinkte Aufgabenstellung, prüfte den leeren Projektordn
 - Optionaler Mehrprozessbetrieb, Administration direkt am Stationsprozess.
 
 Die KI-Unterstützung ersetzt nicht das Verständnis des Quellcodes für das Abgabegespräch. Start, Bedienung und Grenzen stehen in `README.md`.
+
+## Folgeauftrag: GitHub-Abgabe (28.10.2026)
+
+Der Benutzer beauftragte den Upload aller geforderten Abgabedateien aus `Floodmonitor_dsargsian.zip` nach `dsargsian/Floodmonitor-dsargsian` ueber die Kommandozeile. Die Commit-Historie soll den Fortschritt nachvollziehbar zeigen.
+
+Die bereits vorhandenen echten Entwicklungscommits werden uebernommen. Abschliessende Korrekturen an Dokumentationsverweisen, Screenshot-Navigation und Abgabepruefung werden als eigene aktuelle Aenderungen erfasst.

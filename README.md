@@ -106,6 +106,11 @@ Stammdaten werden **am jeweiligen Stationsprozess** administriert; Schreibzugrif
 - [AI-Prompt-Protokoll](docs/AI-PROMPTS.md)
 - [Konfigurationsbeispiel ohne Zugangsdaten](config/application-example.properties)
 
+## Screenshots
+
+- [Webclient mit JSON](docs/screenshots/dashboard-json.png)
+- [Webclient mit XML](docs/screenshots/dashboard-xml.png)
+
 ## Tests
 
 `./mvnw test` bzw. `.\mvnw.cmd test` prüft die API mit MockMvc und die Simulation mit festem Zufallsseed/fester Uhr. Die zeitgesteuerte Simulation und Demo-Historie sind in API-Tests deaktiviert. Testergebnisse stehen unter `target/surefire-reports/`.
