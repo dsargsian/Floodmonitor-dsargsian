@@ -115,6 +115,8 @@ Stammdaten werden **am jeweiligen Stationsprozess** administriert; Schreibzugrif
 
 `./mvnw test` bzw. `.\mvnw.cmd test` prüft die API mit MockMvc und die Simulation mit festem Zufallsseed/fester Uhr. Die zeitgesteuerte Simulation und Demo-Historie sind in API-Tests deaktiviert. Testergebnisse stehen unter `target/surefire-reports/`.
 
+Abgabeprüfung am 28.10.2026 mit Java 21 und Maven 3.9.9: **31 Tests erfolgreich, 0 Fehler**, ausführbare JAR mit `package` erstellt.
+
 ## Bibliotheken
 
 Java 21, Spring Boot 3.5.6, Jackson XML, Jakarta Validation, jQuery 3.7.1 (MIT; Lizenzhinweis im lokal mitgelieferten Skript). Build-Versionen sind festgelegt; dies ist keine Behauptung, dass sie jeweils die neueste Version darstellen.
